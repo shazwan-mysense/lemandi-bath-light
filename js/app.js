@@ -237,6 +237,10 @@
 
   /* ── scroll-linked pieces, evaluated every frame ── */
   const rvEls   = $$('[data-rv]');
+  const hdLogo = $('.hd__logo');
+  const hdBurger = $('.burger');
+  const DARK_SEL = '.hero,.phero,.band,.adv,.ft,.stack__panel--ink,.scard--dark,.menu';
+  let probeTick = 0;
   const fillEls = $$('.js-fill');
   const scaleImgs = $$('.frame--scale img');
   const statsEl = $('[data-stats]');
@@ -298,15 +302,21 @@
         const p = clamp01(-r.top / (r.height - sh));
         const e = easeIO(p);
         const isMobile = vw < 860;
-        const w0 = isMobile ? vw * 0.78 : Math.min(CARD_W0, vw * 0.42);
+        const w0 = isMobile ? vw * 0.78 : Math.min(CARD_W0, vw * (vw < 1500 ? 0.37 : 0.42));
         const h0 = isMobile ? vw * 0.52 : CARD_H0;
         galCard.style.width = lerp(w0, vw, e) + 'px';
         galCard.style.height = lerp(h0, sh, e) + 'px';
         galCard.style.top = lerp(58, 50, e) + '%';
         galCard.style.borderRadius = lerp(16, 0, e) + 'px';
         galCard.style.transform = 'translate(-50%,-50%) rotate(' + lerp(-9, 0, e) + 'deg)';
-        if (galA) galA.style.opacity = 1 - clamp01((p - 0.42) / 0.25);
-        if (galB) galB.style.opacity = clamp01((p - 0.22) / 0.20) - clamp01((p - 0.68) / 0.14);
+        /* narrower screens: copy appears and clears earlier so the growing
+           card never covers half-visible text */
+        const narrow = vw < 1700;
+        const aOut = narrow ? 0.14 : 0.42;
+        const bIn  = narrow ? 0.06 : 0.22;
+        const bOut = narrow ? 0.52 : 0.68;
+        if (galA) galA.style.opacity = 1 - clamp01((p - aOut) / (narrow ? 0.14 : 0.22));
+        if (galB) galB.style.opacity = clamp01((p - bIn) / 0.12) - clamp01((p - bOut) / 0.14);
       }
     }
 
@@ -356,6 +366,22 @@
       let act = 0;
       faqPairs.forEach(([, g], i) => { if (g.getBoundingClientRect().top < vh * 0.55) act = i; });
       faqPairs.forEach(([a], i) => a.classList.toggle('on', i === act));
+    }
+
+    /* header contrast: probe what sits under the logo and the burger */
+    if (hdLogo && hdBurger && ++probeTick % 5 === 0 && document.elementsFromPoint) {
+      const probe = el => {
+        const r = el.getBoundingClientRect();
+        const stack = document.elementsFromPoint(
+          Math.min(vw - 2, Math.max(2, r.left + r.width / 2)), 44);
+        for (const s of stack) {
+          if (s.closest('.hd')) continue;
+          return !!s.closest(DARK_SEL);
+        }
+        return false;
+      };
+      document.documentElement.classList.toggle('logo-dark', probe(hdLogo));
+      document.documentElement.classList.toggle('burger-dark', probe(hdBurger));
     }
 
     /* collections fly image (desktop only; CSS hides it under 860px) */
