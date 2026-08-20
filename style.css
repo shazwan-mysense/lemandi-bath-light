@@ -222,16 +222,23 @@ html.menu-open .menu__nav a{opacity:1;transform:none;transition-delay:calc(.12s 
 .adv__sticky::after{content:"";position:absolute;inset:0;background:rgba(8,16,22,.34)}
 .adv__cards{
   position:absolute;z-index:2;left:44px;right:44px;top:50%;transform:translateY(-50%);
-  display:grid;grid-template-columns:repeat(4,1fr);gap:22px;
+  display:grid;grid-template-columns:repeat(4,1fr);gap:24px;align-items:start;
 }
 .advcard{
-  border-radius:var(--r);padding:34px 28px 38px;color:#fff;
-  background:var(--glass);border:1px solid var(--glass-line);
-  -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
+  border-radius:18px;padding:42px 34px 46px;color:#fff;min-height:290px;
+  background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.42);
+  -webkit-backdrop-filter:blur(22px);backdrop-filter:blur(22px);
+  box-shadow:0 18px 44px rgba(4,10,16,.28);
   opacity:0;transform:translateY(140px);will-change:opacity,transform;
 }
-.advcard h3{color:#fff;font-size:19px;margin-bottom:14px;letter-spacing:-.01em}
-.advcard p{font-size:14px;line-height:1.62;color:rgba(255,255,255,.86)}
+.advcard h3{color:#fff;font-size:21px;margin-bottom:16px;letter-spacing:-.01em}
+.advcard p{font-size:14.5px;line-height:1.66;color:rgba(255,255,255,.92)}
+/* staircase resting layout on the 4-column desktop grid */
+@media(min-width:1081px){
+  .advcard:nth-child(2){margin-top:58px}
+  .advcard:nth-child(3){margin-top:116px}
+  .advcard:nth-child(4){margin-top:174px}
+}
 
 /* ─── process ─── */
 .proc{padding:150px 44px;max-width:1360px;margin:0 auto}
