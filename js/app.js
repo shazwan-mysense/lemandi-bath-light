@@ -192,6 +192,25 @@
     });
   });
 
+  /* ── burger menu (small screens) ── */
+  const burger = $('.burger');
+  if (burger) {
+    burger.addEventListener('click', () => {
+      const open = document.documentElement.classList.toggle('menu-open');
+      burger.setAttribute('aria-expanded', open);
+      const m = $('.menu');
+      if (m) m.setAttribute('aria-hidden', !open);
+      if (lenis) open ? lenis.stop() : lenis.start();
+    });
+    $$('.menu__nav a').forEach(a => a.addEventListener('click', () => {
+      document.documentElement.classList.remove('menu-open');
+      const m = $('.menu');
+      if (m) m.setAttribute('aria-hidden', 'true');
+      burger.setAttribute('aria-expanded', 'false');
+      if (lenis) lenis.start();
+    }));
+  }
+
   /* ── back to top ── */
   const toTop = $('.totop');
   const toTopProg = toTop ? toTop.querySelector('.totop__prog') : null;
@@ -355,21 +374,17 @@
         const p = clamp01(-r.top / (r.height - sh));
         const e = easeIO(p);
         const isMobile = vw < 860;
-        const w0 = isMobile ? vw * 0.78 : Math.min(CARD_W0, vw * (vw < 1500 ? 0.37 : 0.42));
+        const w0 = isMobile ? vw * 0.78 : Math.min(CARD_W0, vw * 0.42);
         const h0 = isMobile ? vw * 0.52 : CARD_H0;
         galCard.style.width = lerp(w0, vw, e) + 'px';
         galCard.style.height = lerp(h0, sh, e) + 'px';
         galCard.style.top = lerp(58, 50, e) + '%';
         galCard.style.borderRadius = lerp(16, 0, e) + 'px';
         galCard.style.transform = 'translate(-50%,-50%) rotate(' + lerp(-9, 0, e) + 'deg)';
-        /* narrower screens: copy appears and clears earlier so the growing
-           card never covers half-visible text */
-        const narrow = vw < 1700;
-        const aOut = narrow ? 0.14 : 0.42;
-        const bIn  = narrow ? 0.06 : 0.22;
-        const bOut = narrow ? 0.52 : 0.68;
-        if (galA) galA.style.opacity = 1 - clamp01((p - aOut) / (narrow ? 0.14 : 0.22));
-        if (galB) galB.style.opacity = clamp01((p - bIn) / 0.12) - clamp01((p - bOut) / 0.14);
+        /* the copy stays on top of the growing card for the whole scrub;
+           the image simply becomes its background */
+        if (galA) galA.style.opacity = 1;
+        if (galB) galB.style.opacity = clamp01((p - 0.2) / 0.22);
       }
     }
 
