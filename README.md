@@ -38,6 +38,23 @@ Each page owns one effect no other page has:
   annotated photo), with a slow scroll zoom on the imagery.
 - **Contact** — giant outlined-text marquee ("Barang Stylo, Harga Power") and a live
   open-now chip computed from Kuala Lumpur time against the approved hours.
+
+## Client amendments — round 1 (Figma comments, 27 Aug)
+
+- **Header rebuilt**: hamburger and fullscreen overlay menu removed; page links now show
+  inline (logo left, nav centre, WhatsApp button right). The bar is transparent at the top
+  of a page and fades to a frosted light background once scrolled past 40px, which also
+  fixes the logo/nav overlapping content beneath. Logo and links flip to white over dark
+  imagery, and a soft top-down scrim keeps them legible over bright photos.
+  On mobile the header becomes two rows with the links in a horizontal scroll strip
+  (no hamburger, per the client's note) — the right edge fades to signal it scrolls.
+- **About image grid**: items 1 and 4 are portrait rectangles (5:6), items 2 and 3 stay
+  square, matching the client's Size A / Size B annotation.
+- **Back-to-top button**: fixed bottom-right, frosted circle with a blue ring that fills
+  as page-scroll progress; appears after the first screen, arrow lifts on hover, and it
+  returns to the top through Lenis so the easing matches the rest of the site.
+- The homepage's separate hero WhatsApp pill was removed, since the header now carries a
+  persistent WhatsApp button on every page.
 - **FAQ** — questions grouped into three topics with a sticky scrollspy rail
   (horizontal chip row on mobile).
 

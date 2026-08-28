@@ -130,23 +130,15 @@
     });
   });
 
-  /* ── menu ── */
-  const burger = $('.burger');
-  if (burger) {
-    burger.addEventListener('click', () => {
-      const open = document.documentElement.classList.toggle('menu-open');
-      burger.setAttribute('aria-expanded', open);
-      const m = $('.menu');
-      if (m) m.setAttribute('aria-hidden', !open);
-      if (lenis) open ? lenis.stop() : lenis.start();
+  /* ── back to top ── */
+  const toTop = $('.totop');
+  const toTopProg = toTop ? toTop.querySelector('.totop__prog') : null;
+  const RING = 131.95;
+  if (toTop) {
+    toTop.addEventListener('click', () => {
+      if (lenis) lenis.scrollTo(0, { duration: 1.1 });
+      else window.scrollTo({ top: 0, behavior: 'smooth' });
     });
-    $$('.menu__nav a').forEach(a => a.addEventListener('click', () => {
-      document.documentElement.classList.remove('menu-open');
-      const m = $('.menu');
-      if (m) m.setAttribute('aria-hidden', 'true');
-      burger.setAttribute('aria-expanded', 'false');
-      if (lenis) lenis.start();
-    }));
   }
 
   /* ── product page: gallery thumbs, quantity stepper, variant pills ── */
@@ -238,8 +230,7 @@
   /* ── scroll-linked pieces, evaluated every frame ── */
   const rvEls   = $$('[data-rv]');
   const hdLogo = $('.hd__logo');
-  const hdBurger = $('.burger');
-  const DARK_SEL = '.hero,.phero,.band,.adv,.ft,.stack__panel--ink,.scard--dark,.menu';
+  const DARK_SEL = '.hero,.phero,.band,.adv,.ft,.stack__panel--ink,.scard--dark';
   let probeTick = 0;
   const fillEls = $$('.js-fill');
   const scaleImgs = $$('.frame--scale img');
@@ -368,20 +359,31 @@
       faqPairs.forEach(([a], i) => a.classList.toggle('on', i === act));
     }
 
-    /* header contrast: probe what sits under the logo and the burger */
-    if (hdLogo && hdBurger && ++probeTick % 5 === 0 && document.elementsFromPoint) {
-      const probe = el => {
-        const r = el.getBoundingClientRect();
+    /* header: gains a background once scrolled; content flips white over dark art */
+    if (++probeTick % 4 === 0) {
+      const de = document.documentElement;
+      const solid = scrollY > 40;
+      de.classList.toggle('hd-solid', solid);
+      let invert = false;
+      if (!solid && hdLogo && document.elementsFromPoint) {
+        const r = hdLogo.getBoundingClientRect();
         const stack = document.elementsFromPoint(
-          Math.min(vw - 2, Math.max(2, r.left + r.width / 2)), 44);
-        for (const s of stack) {
-          if (s.closest('.hd')) continue;
-          return !!s.closest(DARK_SEL);
+          Math.round(r.left + r.width / 2), Math.round(r.top + r.height / 2));
+        for (const el of stack) {
+          if (el.closest('.hd')) continue;
+          invert = !!el.closest(DARK_SEL);
+          break;
         }
-        return false;
-      };
-      document.documentElement.classList.toggle('logo-dark', probe(hdLogo));
-      document.documentElement.classList.toggle('burger-dark', probe(hdBurger));
+      }
+      de.classList.toggle('hd-invert', invert);
+    }
+
+    /* back to top: reveal past the first screen, ring tracks page progress */
+    if (toTop) {
+      const max = document.documentElement.scrollHeight - vh;
+      const p = max > 0 ? clamp01(scrollY / max) : 0;
+      toTop.classList.toggle('on', scrollY > vh * 0.7);
+      if (toTopProg) toTopProg.style.strokeDashoffset = (RING * (1 - p)).toFixed(2);
     }
 
     /* collections fly image (desktop only; CSS hides it under 860px) */
