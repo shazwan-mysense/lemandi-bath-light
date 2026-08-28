@@ -95,17 +95,79 @@
     });
   });
 
-  /* ── collections: cursor-follow image (homepage) ── */
-  const coll = $('.coll');
-  const fly = $('.coll__fly');
-  let fx = innerWidth / 2, fy = innerHeight / 2, tx = fx, ty = fy, flyScale = 0.86;
-  if (coll && fly) {
-    const flyImg = fly.querySelector('img');
-    coll.addEventListener('mousemove', e => { tx = e.clientX; ty = e.clientY; });
-    $$('.coll__list a', coll).forEach(a => {
-      a.addEventListener('mouseenter', () => { flyImg.src = a.dataset.img; fly.classList.add('show'); });
+  /* ── category reel: hover (desktop) or auto-cycle to swipe the title ── */
+  const reel = $('.reel');
+  if (reel) {
+    const titleBox = $('.reel__title', reel);
+    const items = $$('.reel__set:not(.reel__set--dup) .reel__item', reel);
+    const allItems = $$('.reel__item', reel);
+    const viewport = $('.reel__viewport', reel);
+    const titles = items.map(a => a.dataset.title);
+    let idx = 0, autoTimer = null, hovering = false;
+
+    const swipeTo = (t) => {
+      const cur = titleBox.querySelector('.reel__word:not(.reel__word--out)');
+      if (cur && cur.textContent === t) return;
+      if (cur) {
+        cur.classList.add('reel__word--out');
+        setTimeout(() => cur.remove(), 700);
+      }
+      const next = document.createElement('span');
+      next.className = 'reel__word reel__word--in';
+      next.textContent = t;
+      titleBox.appendChild(next);
+      next.offsetHeight; /* force reflow so the transition actually runs */
+      next.classList.remove('reel__word--in');
+    };
+
+    const isMobile = () => innerWidth < 860;
+
+    const advance = () => {
+      idx = (idx + 1) % titles.length;
+      swipeTo(titles[idx]);
+      if (isMobile() && viewport && items[idx]) {
+        viewport.scrollTo({ left: items[idx].offsetLeft - (viewport.clientWidth - items[idx].offsetWidth) / 2,
+                            behavior: 'smooth' });
+      }
+    };
+    const startAuto = () => { clearInterval(autoTimer); autoTimer = setInterval(advance, 3200); };
+    const stopAuto = () => clearInterval(autoTimer);
+
+    /* desktop: hovering an image takes over the title */
+    allItems.forEach(a => {
+      a.addEventListener('mouseenter', () => {
+        if (isMobile()) return;
+        hovering = true; stopAuto();
+        const i = titles.indexOf(a.dataset.title);
+        if (i > -1) idx = i;
+        swipeTo(a.dataset.title);
+      });
     });
-    coll.addEventListener('mouseleave', () => fly.classList.remove('show'));
+    reel.addEventListener('mouseleave', () => { hovering = false; if (!document.hidden) startAuto(); });
+
+    /* mobile: swiping the slider updates the title too */
+    if (viewport) {
+      let sTimer = null;
+      viewport.addEventListener('scroll', () => {
+        if (!isMobile()) return;
+        clearTimeout(sTimer);
+        sTimer = setTimeout(() => {
+          const mid = viewport.scrollLeft + viewport.clientWidth / 2;
+          let best = 0, bd = Infinity;
+          items.forEach((it, i) => {
+            const c = it.offsetLeft + it.offsetWidth / 2;
+            if (Math.abs(c - mid) < bd) { bd = Math.abs(c - mid); best = i; }
+          });
+          if (best !== idx) { idx = best; swipeTo(titles[idx]); }
+        }, 90);
+      }, { passive: true });
+    }
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden || hovering) stopAuto(); else startAuto();
+    });
+    swipeTo(titles[0]);
+    startAuto();
   }
 
   /* ── accordions ──
@@ -386,16 +448,6 @@
       if (toTopProg) toTopProg.style.strokeDashoffset = (RING * (1 - p)).toFixed(2);
     }
 
-    /* collections fly image (desktop only; CSS hides it under 860px) */
-    if (coll && fly && vw >= 860) {
-      const cr = coll.getBoundingClientRect();
-      if (cr.bottom > 0 && cr.top < vh) {
-        fx = lerp(fx, tx, 0.14);
-        fy = lerp(fy, ty, 0.14);
-        flyScale = lerp(flyScale, fly.classList.contains('show') ? 1 : 0.86, 0.16);
-        fly.style.transform = 'translate(' + (fx - 125) + 'px,' + (fy - 155) + 'px) scale(' + flyScale.toFixed(3) + ')';
-      }
-    }
   }
 
   function loop(t) {

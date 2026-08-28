@@ -55,6 +55,18 @@ Each page owns one effect no other page has:
   returns to the top through Lenis so the easing matches the rest of the site.
 - The homepage's separate hero WhatsApp pill was removed, since the header now carries a
   persistent WhatsApp button on every page.
+
+## Client amendments — round 2
+
+- **Photo ticker and the category text list were merged.** The client flagged them as
+  saying the same thing twice, so the standalone text list (with its cursor-follow image)
+  is gone and the image reel now carries the category names itself.
+- **Category reel**: the images keep marquee-ing, with one big category title underneath.
+  Hovering an image pauses the marquee, spotlights that image (the others dim) and swipes
+  the title vertically to match. When nothing is hovered the title auto-cycles every 3.2s
+  so the section is never static.
+- **Mobile**: the marquee becomes a one-per-slide snap slider. The title auto-swaps with
+  the slide, and swiping manually updates it too — no tapping required.
 - **FAQ** — questions grouped into three topics with a sticky scrollspy rail
   (horizontal chip row on mobile).
 

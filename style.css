@@ -194,12 +194,39 @@ html.hd-invert .hd__nav a::after{background:var(--blue)}
 .odo-strip b{display:block;height:1em;line-height:1;font-weight:800;text-align:center}
 .odo-suf{color:var(--blue);font-weight:800;margin-left:2px}
 
-/* ─── photo ticker ─── */
-.ptick{overflow:hidden;padding:40px 0 120px}
-.ptick__track{display:flex;width:max-content;animation:ptick 38s linear infinite}
-.ptick__set{display:flex;gap:22px;padding-right:22px}
-.ptick__set img{width:430px;height:490px;object-fit:cover;border-radius:var(--r)}
-@keyframes ptick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+/* ─── category reel (images + swiping title) ─── */
+.reel{padding:34px 0 104px;overflow:hidden}
+.reel__viewport{overflow:hidden}
+.reel__track{display:flex;width:max-content;animation:reel 46s linear infinite}
+.reel:hover .reel__track{animation-play-state:paused}
+.reel__set{display:flex;gap:22px;padding-right:22px}
+.reel__item{
+  position:relative;flex:0 0 auto;width:430px;height:490px;
+  border-radius:var(--r);overflow:hidden;background:var(--soft);
+  transition:transform .5s cubic-bezier(.2,.7,.3,1);
+}
+.reel__item img{width:100%;height:100%;object-fit:cover;transition:transform .7s cubic-bezier(.2,.7,.3,1)}
+.reel__item::after{
+  content:"";position:absolute;inset:0;background:rgba(6,16,24,.5);
+  opacity:0;transition:opacity .4s ease;
+}
+.reel:hover .reel__item::after{opacity:.45}
+.reel:hover .reel__item:hover::after{opacity:0}
+.reel__item:hover{transform:translateY(-6px)}
+.reel__item:hover img{transform:scale(1.07)}
+@keyframes reel{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+.reel__title{
+  position:relative;margin:52px auto 0;height:1.14em;overflow:hidden;text-align:center;
+  font-family:var(--sora);font-size:clamp(38px,7.2vw,112px);font-weight:800;
+  letter-spacing:-.035em;line-height:1.14;color:var(--blue-deep);
+}
+.reel__word{
+  position:absolute;inset:0;display:grid;place-items:center;white-space:nowrap;
+  transition:transform .62s cubic-bezier(.6,.05,.2,1),opacity .45s ease;
+}
+.reel__word--in{transform:translateY(105%);opacity:0}
+.reel__word--out{transform:translateY(-105%);opacity:0}
 
 /* ─── gallery scrub ─── */
 .gal{height:320vh;position:relative}
@@ -221,21 +248,6 @@ html.hd-invert .hd__nav a::after{background:var(--blue)}
   .gal__b{font-size:clamp(30px,3.3vw,52px)}
   .gal__p{max-width:340px}
 }
-
-/* ─── collections ─── */
-.coll{position:relative;padding:150px 44px;text-align:center}
-.coll__list li a{
-  display:block;font-size:clamp(40px,5vw,72px);font-weight:700;letter-spacing:-.025em;line-height:1.32;
-  color:var(--blue-deep);transition:color .3s ease;
-}
-.coll__list li a:hover{color:var(--blue-mid)}
-.coll__fly{
-  position:fixed;z-index:30;left:0;top:0;width:250px;height:310px;
-  border-radius:12px;overflow:hidden;pointer-events:none;
-  opacity:0;transition:opacity .35s ease;will-change:transform;
-}
-.coll__fly.show{opacity:1}
-.coll__fly img{width:100%;height:100%;object-fit:cover}
 
 /* ─── advantages ─── */
 .adv{height:240vh;position:relative}
@@ -344,7 +356,7 @@ html.js .acc__body{max-height:0}
 @media(max-width:1080px){
   .adv__cards{grid-template-columns:repeat(2,1fr)}
   .adv{height:280vh}
-  .ptick__set img{width:330px;height:390px}
+  .reel__item{width:330px;height:390px}
 }
 @media(max-width:860px){
   .hd{padding:8px 22px 0;height:auto;flex-wrap:wrap;gap:10px 14px}
@@ -366,15 +378,20 @@ html.js .acc__body{max-height:0}
   .about{padding:90px 22px 80px}
   .about__grid{grid-template-columns:1fr;gap:48px}
   .stats{gap:18px;margin-top:70px}
-  .ptick{padding-bottom:48px}
-  .ptick__set img{width:240px;height:290px}
+  .reel{padding:22px 0 72px}
+  .reel__viewport{overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .reel__viewport::-webkit-scrollbar{display:none}
+  .reel__track{animation:none;width:max-content}
+  .reel__set{gap:14px;padding:0 11vw 0 0}
+  .reel__set--dup{display:none}
+  .reel__item{width:78vw;height:96vw;scroll-snap-align:center}
+  .reel__item::after{opacity:0 !important}
+  .reel__title{margin-top:34px}
   .gal__copy{top:8%}
   .gal{height:280vh}
   .gal__copy{left:22px;right:22px;flex-direction:column;gap:22px;top:10%}
   .gal__b{right:22px;bottom:11%}
   .gal__card{width:78vw;height:52vw;top:56%}
-  .coll{padding:100px 22px}
-  .coll__fly{display:none}
   .adv__cards{left:22px;right:22px;grid-template-columns:1fr;gap:14px}
   .advcard{padding:24px 22px 26px;transform:translateY(90px)}
   .adv{height:300vh}
