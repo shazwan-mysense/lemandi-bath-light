@@ -10,7 +10,14 @@
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Nothing+You+Could+Do&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="has-abar">
+
+<!-- ═══ announcement bar ═══ -->
+<div class="abar" aria-hidden="true">
+  <div class="abar__track">
+    <span>Warehouse-direct prices&ensp;•&ensp;Free design consultation&ensp;•&ensp;Open daily 9:00 AM to 6:00 PM&ensp;•&ensp;Free parking at the showroom&ensp;•&ensp;</span><span>Warehouse-direct prices&ensp;•&ensp;Free design consultation&ensp;•&ensp;Open daily 9:00 AM to 6:00 PM&ensp;•&ensp;Free parking at the showroom&ensp;•&ensp;</span>
+  </div>
+</div>
 
 <!-- ═══ fixed header ═══ -->
 <header class="hd">
@@ -27,7 +34,7 @@
     <a href="faq.html">FAQ</a>
   </nav>
   <a class="hd__wa" href="https://wa.me/60183278180">WhatsApp Us</a>
-  <button class="burger" aria-label="Menu" aria-expanded="false"><span></span><span></span></button>
+  <button class="burger" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
 </header>
 
 <div class="menu" aria-hidden="true">
@@ -65,11 +72,6 @@
     <p class="hero__sub">LEmandi Bath &amp; Light</p>
   </div>
 
-  <div class="tick" aria-hidden="true">
-    <div class="tick__track">
-      <span>Warehouse-direct prices&ensp;•&ensp;Free design consultation&ensp;•&ensp;Open daily 9:00 AM to 6:00 PM&ensp;•&ensp;Free parking at the showroom&ensp;•&ensp;</span><span>Warehouse-direct prices&ensp;•&ensp;Free design consultation&ensp;•&ensp;Open daily 9:00 AM to 6:00 PM&ensp;•&ensp;Free parking at the showroom&ensp;•&ensp;</span>
-    </div>
-  </div>
 </section>
 
 <!-- ═══ about ═══ -->
@@ -120,24 +122,65 @@
   <p class="reel__title" aria-live="polite"><span class="reel__word">Sanitary Ware</span></p>
 </section>
 
-<!-- ═══ gallery scrub ═══ -->
-<section class="gal">
-  <div class="gal__sticky">
-    <div class="gal__copy">
-      <h2 class="gal__a">Your Home is Unique.</h2>
-      <p class="gal__p">Every upgrade starts with seeing the real thing. Walk the floor, test the finishes and compare trusted brands side by side, at prices that come straight from the source.</p>
+<!-- ═══ featured products ═══ -->
+<section class="fslider fslider--home" aria-label="Featured products">
+  <div class="fslider__win">
+    <div class="fslider__track">
+      <article class="fslide">
+        <div class="fslide__copy">
+          <p class="label">Featured this month</p>
+          <h2>Instant Water Heater with Booster Pump</h2>
+          <p class="fslide__price">RM 560 <s>RM 699</s></p>
+          <a class="pill" href="product.html">See details</a>
+        </div>
+        <div class="fslide__img"><img src="assets/cat6.jpg" alt="Instant water heater with hand shower"></div>
+      </article>
+      <article class="fslide">
+        <div class="fslide__copy">
+          <p class="label">New on the floor</p>
+          <h2>Smart Toilet with Heated Seat</h2>
+          <p class="fslide__price">RM 2,199</p>
+          <a class="pill" href="product.html">See details</a>
+        </div>
+        <div class="fslide__img"><img src="assets/cat1.jpg" alt="Smart toilet with heated seat" loading="lazy"></div>
+      </article>
+      <article class="fslide">
+        <div class="fslide__copy">
+          <p class="label">Bathroom fittings</p>
+          <h2>Rain Shower Set with Hand Shower</h2>
+          <p class="fslide__price">RM 399</p>
+          <a class="pill" href="product.html">See details</a>
+        </div>
+        <div class="fslide__img"><img src="assets/p3.jpg" alt="Rain shower running against dark tiles" loading="lazy"></div>
+      </article>
     </div>
-    <h2 class="gal__b">Barang Stylo.<br>Harga Power.</h2>
-    <div class="gal__card"><img src="assets/scrub.jpg" alt="Bathroom suite with walk-in shower and freestanding tub"></div>
+  </div>
+  <div class="fslider__dots"></div>
+  <div class="fslider__nav">
+    <button aria-label="Previous slide">←</button>
+    <button aria-label="Next slide">→</button>
+  </div>
+</section>
+
+<!-- ═══ showroom statement ═══ -->
+<section class="gal2">
+  <div class="gal2__head">
+    <h2 data-rv>Your Home is Unique.</h2>
+    <p data-rv>Every upgrade starts with seeing the real thing. Walk the floor, test the finishes and compare trusted brands side by side, at prices that come straight from the source.</p>
+  </div>
+  <div class="gal2__media" data-rv>
+    <img src="assets/scrub.jpg" alt="Bathroom suite with walk-in shower and freestanding tub" loading="lazy">
+    <div class="gal2__scrim"></div>
+    <h2 class="gal2__b">Barang Stylo.<br>Harga Power.</h2>
   </div>
 </section>
 
 
 <!-- ═══ advantages ═══ -->
-<section class="adv">
+<section class="adv adv--csl">
   <div class="adv__sticky">
     <img class="adv__bg" src="assets/contact_alt.jpg" alt="" loading="lazy">
-    <div class="adv__cards">
+    <div class="adv__cards" data-rv>
       <div class="advcard">
         <h3>Warehouse-Direct Pricing</h3>
         <p>Buy direct from trusted manufacturers and enjoy honest pricing without unnecessary retail markups or hidden costs.</p>

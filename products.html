@@ -26,7 +26,7 @@
     <a href="faq.html">FAQ</a>
   </nav>
   <a class="hd__wa" href="https://wa.me/60183278180">WhatsApp Us</a>
-  <button class="burger" aria-label="Menu" aria-expanded="false"><span></span><span></span></button>
+  <button class="burger" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
 </header>
 
 <div class="menu" aria-hidden="true">
@@ -53,64 +53,72 @@
   </div>
 </section>
 
-<section class="fslider" aria-label="Featured products">
-  <div class="fslider__win">
-    <div class="fslider__track">
-      <article class="fslide">
-        <div class="fslide__copy">
-          <p class="label">Featured this month</p>
-          <h2>Instant Water Heater with Booster Pump</h2>
-          <p class="fslide__price">RM 560 <s>RM 699</s></p>
-          <a class="pill" href="product.html">See details</a>
-        </div>
-        <div class="fslide__img"><img src="assets/cat6.jpg" alt="Instant water heater with hand shower"></div>
-      </article>
-      <article class="fslide">
-        <div class="fslide__copy">
-          <p class="label">New on the floor</p>
-          <h2>Smart Toilet with Heated Seat</h2>
-          <p class="fslide__price">RM 2,199</p>
-          <a class="pill" href="product.html">See details</a>
-        </div>
-        <div class="fslide__img"><img src="assets/cat1.jpg" alt="Smart toilet with heated seat" loading="lazy"></div>
-      </article>
-      <article class="fslide">
-        <div class="fslide__copy">
-          <p class="label">Bathroom fittings</p>
-          <h2>Rain Shower Set with Hand Shower</h2>
-          <p class="fslide__price">RM 399</p>
-          <a class="pill" href="product.html">See details</a>
-        </div>
-        <div class="fslide__img"><img src="assets/p3.jpg" alt="Rain shower running against dark tiles" loading="lazy"></div>
-      </article>
-    </div>
-  </div>
-  <div class="fslider__dots"></div>
-  <div class="fslider__nav">
-    <button aria-label="Previous slide">←</button>
-    <button aria-label="Next slide">→</button>
-  </div>
-</section>
-
 <section class="pgsec pgsec--tight">
-  <div class="chips" data-rv>
-    <a class="chip2 chip2--all" href="#">All products</a>
-    <a class="chip2" href="#"><img src="assets/cat1.jpg" alt="">Sanitary Ware &amp; Water Closets</a>
-    <a class="chip2" href="#"><img src="assets/cat2.jpg" alt="">Basins &amp; Vanities</a>
-    <a class="chip2" href="#"><img src="assets/cat3.jpg" alt="">Bathroom Fittings, Showers &amp; Faucets</a>
-    <a class="chip2" href="#"><img src="assets/cat4.jpg" alt="">Kitchen Appliances &amp; Sinks</a>
-    <a class="chip2" href="#"><img src="assets/cat5.jpg" alt="">Lighting &amp; Ceiling Fans</a>
-    <a class="chip2" href="#"><img src="assets/cat6.jpg" alt="">Water Heaters &amp; Ventilation</a>
-  </div>
+  <div class="shop">
+    <aside class="shop__side" data-rv aria-label="Filter products">
+      <div class="sbox sbox--search">
+        <input type="search" class="js-shop-search" placeholder="Search products" aria-label="Search products">
+      </div>
+      <div class="sbox sbox--price">
+        <h4>Price range</h4>
+        <input type="range" class="js-shop-price" min="100" max="2500" step="50" value="2500" aria-label="Maximum price">
+        <output>RM 100 <b class="js-shop-pricemax">RM 2,500</b></output>
+      </div>
+      <div class="sbox">
+        <h4>Categories</h4>
+        <div class="scheck js-shop-cats">
+          <label><input type="checkbox" value="sanitary"><span>Sanitary Ware &amp; Water Closets</span><em>2</em></label>
+          <label><input type="checkbox" value="basins"><span>Basins &amp; Vanities</span><em>1</em></label>
+          <label><input type="checkbox" value="fittings"><span>Fittings, Showers &amp; Faucets</span><em>2</em></label>
+          <label><input type="checkbox" value="kitchen"><span>Kitchen Appliances &amp; Sinks</span><em>1</em></label>
+          <label><input type="checkbox" value="lighting"><span>Lighting &amp; Ceiling Fans</span><em>2</em></label>
+          <label><input type="checkbox" value="water"><span>Water Heaters &amp; Ventilation</span><em>1</em></label>
+        </div>
+      </div>
+      <div class="sbox">
+        <h4>Colour</h4>
+        <div class="swatches">
+          <button style="background:#F4F6F7" aria-label="White"></button>
+          <button style="background:#20242A" aria-label="Matte black"></button>
+          <button style="background:#C7CDD4" aria-label="Chrome"></button>
+          <button style="background:#5A6169" aria-label="Graphite"></button>
+          <button style="background:#B08A5E" aria-label="Wood"></button>
+        </div>
+      </div>
+      <div class="sbox">
+        <h4>Availability</h4>
+        <div class="scheck">
+          <label><input type="checkbox" checked><span>In stock only</span></label>
+        </div>
+      </div>
+      <div class="sbox">
+        <h4>Top rated</h4>
+        <div class="srated">
+          <a href="product.html">
+            <img src="assets/cat6.jpg" alt="Instant water heater">
+            <span><b>Instant Water Heater with Booster Pump</b>
+            <span class="stars">★★★★★</span>
+            <q>Shower pressure upstairs finally feels right.</q></span>
+          </a>
+          <a href="product.html">
+            <img src="assets/p1.jpg" alt="Two-piece toilet bowl">
+            <span><b>Two-Piece Toilet Bowl, S-Trap</b>
+            <span class="stars">★★★★★</span>
+            <q>Installed in a day, solid quality for the price.</q></span>
+          </a>
+        </div>
+      </div>
+    </aside>
 
-  <div class="shop__bar" data-rv>
-    <p class="shop__count">Showing products 1–9</p>
-    <label class="shop__sort">Sort by
-      <select><option>Featured</option><option>Price, low to high</option><option>Price, high to low</option><option>Newest</option></select>
-    </label>
-  </div>
+    <div class="shop__main">
+      <div class="shop__bar" data-rv style="margin-top:0">
+        <p class="shop__count">Showing 9 products</p>
+        <label class="shop__sort">Sort by
+          <select class="js-shop-sort"><option>Featured</option><option>Price, low to high</option><option>Price, high to low</option><option>Newest</option></select>
+        </label>
+      </div>
 
-  <div class="pgrid">
+      <div class="pgrid">
     <a class="pcard" href="product.html" data-rv>
       <div class="pcard__img"><span class="pcard__tag">Bestseller</span><img src="assets/p1.jpg" alt="Two-piece toilet bowl" loading="lazy"></div>
       <div class="pcard__body"><p class="pcard__cat">Sanitary ware &amp; water closets</p><h3>Two-Piece Toilet Bowl, S-Trap</h3><p class="pcard__price">RM 489 <s>RM 620</s></p></div>
@@ -149,9 +157,11 @@
     </a>
   </div>
 
-  <nav class="pager" data-rv>
-    <a class="cur" href="#">1</a><a href="#">2</a><a href="#">3</a><a href="#">→</a>
-  </nav>
+      <nav class="pager" data-rv>
+        <a class="cur" href="#">1</a><a href="#">2</a><a href="#">3</a><a href="#">→</a>
+      </nav>
+    </div>
+  </div>
 </section>
 
 <section class="band">

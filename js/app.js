@@ -192,23 +192,25 @@
     });
   });
 
-  /* ── burger menu (small screens) ── */
+  /* ── burger menu (small screens): dropdown panel over a scrim ── */
   const burger = $('.burger');
+  const menuEl = $('.menu');
+  const closeMenu = () => {
+    document.documentElement.classList.remove('menu-open');
+    if (menuEl) menuEl.setAttribute('aria-hidden', 'true');
+    if (burger) burger.setAttribute('aria-expanded', 'false');
+    if (lenis) lenis.start();
+  };
   if (burger) {
     burger.addEventListener('click', () => {
       const open = document.documentElement.classList.toggle('menu-open');
       burger.setAttribute('aria-expanded', open);
-      const m = $('.menu');
-      if (m) m.setAttribute('aria-hidden', !open);
+      if (menuEl) menuEl.setAttribute('aria-hidden', !open);
       if (lenis) open ? lenis.stop() : lenis.start();
     });
-    $$('.menu__nav a').forEach(a => a.addEventListener('click', () => {
-      document.documentElement.classList.remove('menu-open');
-      const m = $('.menu');
-      if (m) m.setAttribute('aria-hidden', 'true');
-      burger.setAttribute('aria-expanded', 'false');
-      if (lenis) lenis.start();
-    }));
+    $$('.menu__nav a').forEach(a => a.addEventListener('click', closeMenu));
+    /* tapping the dark layer under the panel closes the menu */
+    if (menuEl) menuEl.addEventListener('click', e => { if (e.target === menuEl) closeMenu(); });
   }
 
   /* ── back to top ── */
@@ -235,14 +237,12 @@
       });
     });
   }
-  const qty = $('.qty');
-  if (qty) {
-    const out = qty.querySelector('output');
-    qty.addEventListener('click', e => {
-      const b = e.target.closest('button');
-      if (!b) return;
-      out.value = Math.max(1, (+out.value || 1) + (+b.dataset.d));
-    });
+  /* whatsapp CTA carries the product name + page link in the message */
+  const waProduct = $('.js-waproduct');
+  if (waProduct) {
+    const name = ($('.pg__buy h1') || {}).textContent || document.title;
+    const msg = 'Hi LEmandi! I would like to ask about: ' + name.trim() + ' — ' + location.href;
+    waProduct.href = 'https://wa.me/60183278180?text=' + encodeURIComponent(msg);
   }
   $$('.variants').forEach(v => {
     v.addEventListener('click', e => {
@@ -293,6 +293,131 @@
     }
   }
 
+  /* ── phone-size carousel for the advantages cards ──
+     one card per view, auto-advances every 2s, arrows + dot nav */
+  $$('.adv--csl').forEach(section => {
+    const track = section.querySelector('.adv__cards');
+    const cards = track ? $$('.advcard', track) : [];
+    if (!track || cards.length < 2) return;
+
+    const ui = document.createElement('div');
+    ui.className = 'csl__ui';
+    const dots = document.createElement('div');
+    dots.className = 'csl__dots';
+    const nav = document.createElement('div');
+    nav.className = 'csl__nav';
+    const prev = document.createElement('button');
+    prev.textContent = '←'; prev.setAttribute('aria-label', 'Previous');
+    const next = document.createElement('button');
+    next.textContent = '→'; next.setAttribute('aria-label', 'Next');
+    nav.append(prev, next);
+    ui.append(dots, nav);
+    track.after(ui);
+
+    let idx = 0, timer = null, holdOff = null;
+    cards.forEach((_, i) => {
+      const d = document.createElement('button');
+      d.setAttribute('aria-label', 'Card ' + (i + 1));
+      d.addEventListener('click', () => go(i, true));
+      dots.appendChild(d);
+    });
+    const dbs = $$('button', dots);
+    const isMobile = () => matchMedia('(max-width:859px)').matches;
+
+    function paint() { dbs.forEach((d, n) => d.classList.toggle('on', n === idx)); }
+    function go(i, manual) {
+      idx = (i + cards.length) % cards.length;
+      const c = cards[idx];
+      track.scrollTo({ left: c.offsetLeft - track.offsetLeft - (track.clientWidth - c.offsetWidth) / 2,
+                       behavior: 'smooth' });
+      paint();
+      if (manual) pause(5000);
+    }
+    function tickOver() { if (isMobile() && !document.hidden) go(idx + 1); }
+    function play() { clearInterval(timer); timer = setInterval(tickOver, 2000); }
+    function pause(ms) {
+      clearInterval(timer);
+      clearTimeout(holdOff);
+      holdOff = setTimeout(play, ms);
+    }
+    prev.addEventListener('click', () => go(idx - 1, true));
+    next.addEventListener('click', () => go(idx + 1, true));
+    track.addEventListener('touchstart', () => pause(4500), { passive: true });
+    let sTimer = null;
+    track.addEventListener('scroll', () => {
+      clearTimeout(sTimer);
+      sTimer = setTimeout(() => {
+        const mid = track.scrollLeft + track.clientWidth / 2;
+        let best = 0, bd = Infinity;
+        cards.forEach((c, i) => {
+          const cc = c.offsetLeft - track.offsetLeft + c.offsetWidth / 2;
+          if (Math.abs(cc - mid) < bd) { bd = Math.abs(cc - mid); best = i; }
+        });
+        if (best !== idx) { idx = best; paint(); }
+      }, 90);
+    }, { passive: true });
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) play(); });
+    paint();
+    play();
+  });
+
+  /* ── shop page: live filters and sorting on the mock catalogue ── */
+  const shop = $('.shop');
+  if (shop) {
+    const grid = shop.querySelector('.pgrid');
+    const cardsAll = $$('.pcard', grid);
+    const count = shop.querySelector('.shop__count');
+    const searchIn = shop.querySelector('.js-shop-search');
+    const priceIn = shop.querySelector('.js-shop-price');
+    const priceOut = shop.querySelector('.js-shop-pricemax');
+    const catBoxes = $$('.js-shop-cats input');
+    const sortSel = shop.querySelector('.js-shop-sort');
+    const CATS = {
+      'sanitary ware & water closets': 'sanitary',
+      'basins & vanities': 'basins',
+      'bathroom fittings, showers & faucets': 'fittings',
+      'kitchen appliances & sinks': 'kitchen',
+      'lighting & ceiling fans': 'lighting',
+      'water heaters & ventilation': 'water',
+    };
+    const meta = cardsAll.map(card => ({
+      card,
+      title: (card.querySelector('h3') || {}).textContent.toLowerCase(),
+      cat: CATS[((card.querySelector('.pcard__cat') || {}).textContent || '').trim().toLowerCase()] || '',
+      price: parseFloat((((card.querySelector('.pcard__price') || {}).firstChild || {}).textContent || '')
+        .replace(/[^\d.]/g, '')) || 0,
+    }));
+
+    function apply() {
+      const q = (searchIn && searchIn.value || '').trim().toLowerCase();
+      const max = priceIn ? +priceIn.value : Infinity;
+      const cats = catBoxes.filter(c => c.checked).map(c => c.value);
+      let shown = 0;
+      meta.forEach(m => {
+        const ok = (!q || m.title.includes(q)) && m.price <= max && (!cats.length || cats.includes(m.cat));
+        m.card.style.display = ok ? '' : 'none';
+        if (ok) shown++;
+      });
+      if (count) count.textContent = 'Showing ' + shown + (shown === 1 ? ' product' : ' products');
+      if (priceOut) priceOut.textContent = 'RM ' + max.toLocaleString('en-MY');
+    }
+    function resort() {
+      if (!sortSel) return;
+      const mode = sortSel.value;
+      const order = [...meta];
+      if (mode === 'Price, low to high') order.sort((a, b) => a.price - b.price);
+      else if (mode === 'Price, high to low') order.sort((a, b) => b.price - a.price);
+      else if (mode === 'Newest') order.reverse();
+      order.forEach(m => grid.appendChild(m.card));
+    }
+    if (searchIn) searchIn.addEventListener('input', apply);
+    if (priceIn) priceIn.addEventListener('input', apply);
+    catBoxes.forEach(c => c.addEventListener('change', apply));
+    if (sortSel) sortSel.addEventListener('change', resort);
+    $$('.swatches button', shop).forEach(b => b.addEventListener('click', () => b.classList.toggle('on')));
+    apply();
+  }
+
   /* ── open-now chip (contact page) — KL time, client-approved hours ── */
   const chip = $('.openchip');
   if (chip) {
@@ -308,33 +433,19 @@
     setInterval(tickChip, 60000);
   }
 
-  /* ── scroll-linked pieces, evaluated every frame ── */
+  /* ── scroll-watched pieces, evaluated every frame ──
+     everything reveals ON ENTRY; nothing is scrubbed by scroll position */
   const rvEls   = $$('[data-rv]');
   const hdLogo = $('.hd__logo');
   const DARK_SEL = '.hero,.phero,.band,.adv,.ft,.stack__panel--ink,.scard--dark';
   let probeTick = 0;
   const fillEls = $$('.js-fill');
-  const scaleImgs = $$('.frame--scale img');
   const statsEl = $('[data-stats]');
-  const gal = $('.gal');
-  const galSticky = $('.gal__sticky');
-  const galCard = $('.gal__card');
-  const galA = $('.gal__copy');
-  const galB = $('.gal__b');
-  const adv = $('.adv');
-  const advSticky = $('.adv__sticky');
-  const advCards = $$('.advcard');
-  const hs = $('.hscroll');
-  const hsSticky = $('.hscroll__sticky');
-  const hsTrack = $('.hscroll__track');
   const zoomImgs = $$('.js-zoom img');
-  const paraFrames = $$('.para');
   const faqRail = $('.faqrail');
   const faqPairs = (faqRail ? $$('a', faqRail) : [])
     .map(a => [a, document.querySelector(a.getAttribute('href'))])
     .filter(p => p[1]);
-
-  const CARD_W0 = 560, CARD_H0 = 400;
 
   function render() {
     const vh = innerHeight, vw = innerWidth;
@@ -351,74 +462,16 @@
       });
     }
 
+    /* headings fill word by word once they enter the viewport */
     for (const el of fillEls) {
-      const r = el.getBoundingClientRect();
-      const p = clamp01((vh * 0.9 - r.top) / (vh * 0.55));
-      const words = el.children;
-      const n = Math.round(p * words.length);
-      for (let i = 0; i < words.length; i++) words[i].classList.toggle('on', i < n);
-    }
-
-    for (const img of scaleImgs) {
-      const r = img.parentElement.getBoundingClientRect();
-      const p = easeIO(clamp01((vh - r.top) / (vh * 0.75)));
-      img.style.transform = 'scale(' + (0.8 + 0.2 * p) + ')';
-    }
-
-    /* gallery scrub: tilted card grows to full-bleed
-       (sticky height measured, not innerHeight — iOS toolbars differ) */
-    if (gal && galSticky && galCard) {
-      const r = gal.getBoundingClientRect();
-      if (r.bottom > 0 && r.top < vh) {
-        const sh = galSticky.getBoundingClientRect().height;
-        const p = clamp01(-r.top / (r.height - sh));
-        const e = easeIO(p);
-        const isMobile = vw < 860;
-        const w0 = isMobile ? vw * 0.78 : Math.min(CARD_W0, vw * 0.42);
-        const h0 = isMobile ? vw * 0.52 : CARD_H0;
-        galCard.style.width = lerp(w0, vw, e) + 'px';
-        galCard.style.height = lerp(h0, sh, e) + 'px';
-        galCard.style.top = lerp(58, 50, e) + '%';
-        galCard.style.borderRadius = lerp(16, 0, e) + 'px';
-        galCard.style.transform = 'translate(-50%,-50%) rotate(' + lerp(-9, 0, e) + 'deg)';
-        /* the copy stays on top of the growing card for the whole scrub;
-           the image simply becomes its background */
-        if (galA) galA.style.opacity = 1;
-        if (galB) galB.style.opacity = clamp01((p - 0.2) / 0.22);
-      }
-    }
-
-    /* advantages: staggered frosted cards over pinned photo */
-    if (adv && advSticky) {
-      const r = adv.getBoundingClientRect();
-      if (r.bottom > 0 && r.top < vh) {
-        const sh = advSticky.getBoundingClientRect().height;
-        const p = clamp01(-r.top / (r.height - sh));
-        advCards.forEach((card, i) => {
-          const pc = easeIO(clamp01(p * 2.1 - i * 0.24));
-          card.style.opacity = pc;
-          card.style.transform = 'translateY(' + (1 - pc) * 140 + 'px)';
+      if (el.__filled) continue;
+      if (el.getBoundingClientRect().top < vh * 0.85) {
+        el.__filled = true;
+        [...el.children].forEach((w, i) => {
+          w.style.transitionDelay = (i * 45) + 'ms';
+          w.classList.add('on');
         });
       }
-    }
-
-    /* about: horizontal scroll story */
-    if (hs && hsSticky && hsTrack && vw >= 860) {
-      const r = hs.getBoundingClientRect();
-      if (r.bottom > 0 && r.top < vh) {
-        const sh = hsSticky.getBoundingClientRect().height;
-        const p = easeIO(clamp01(-r.top / (r.height - sh)));
-        const max = Math.max(0, hsTrack.scrollWidth - vw + 44);
-        hsTrack.style.transform = 'translateX(' + (-p * max) + 'px)';
-      }
-    }
-
-    /* about: parallax image grid */
-    for (const f of paraFrames) {
-      const r = f.getBoundingClientRect();
-      if (r.bottom < 0 || r.top > vh) continue;
-      const p = (r.top + r.height / 2 - vh / 2) / vh;
-      f.style.transform = 'translateY(' + (p * parseFloat(f.dataset.speed || 30)) + 'px)';
     }
 
     /* product: slow zoom on the gallery as it scrolls */
