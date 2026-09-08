@@ -278,29 +278,29 @@ body.has-abar .hero{height:calc(100vh - 38px);height:calc(100svh - 38px)}
 .reel__word--in{transform:translateY(105%);opacity:0}
 .reel__word--out{transform:translateY(-105%);opacity:0}
 
-/* ─── showroom statement: full-bleed photo, copy always readable ─── */
-.gal2{padding:104px 0 130px;background:#fff}
-.gal2__head{max-width:1360px;margin:0 auto 54px;padding:0 44px;
+/* ─── gallery scrub: tilted card grows to full-bleed as you scroll ─── */
+.gal{height:320vh;position:relative}
+.gal__sticky{position:sticky;top:0;height:100vh;height:100dvh;overflow:hidden;background:#fff}
+.gal__copy{position:absolute;z-index:3;top:14%;left:44px;right:44px;
   display:flex;justify-content:space-between;gap:60px;align-items:flex-start}
-.gal2__head h2{font-size:clamp(40px,5vw,72px);font-weight:700;letter-spacing:-.03em;max-width:7em}
-.gal2__head p{max-width:400px;font-size:15.5px;color:var(--body);padding-top:14px}
-.gal2__media{position:relative;margin:0 44px;border-radius:24px;overflow:hidden;
-  height:min(78vh,760px);min-height:420px;background:var(--ink)}
-.gal2__media img{width:100%;height:100%;object-fit:cover;
-  transform:scale(1.07);transition:transform 1.6s cubic-bezier(.2,.65,.25,1)}
-.gal2__media.on img{transform:scale(1)}
-.gal2__scrim{position:absolute;inset:0;
-  background:linear-gradient(205deg,rgba(6,16,24,0) 42%,rgba(6,16,24,.58) 100%)}
-.gal2__b{position:absolute;left:44px;bottom:34px;color:#fff;
-  font-size:clamp(40px,5.2vw,84px);font-weight:700;letter-spacing:-.03em;line-height:1.05}
+.gal__a{font-size:clamp(40px,5vw,72px);font-weight:700;letter-spacing:-.03em;max-width:7em}
+.gal__p{max-width:400px;font-size:15.5px;color:var(--body);padding-top:14px}
+.gal__b{position:absolute;z-index:3;right:44px;bottom:14%;text-align:right;
+  font-size:clamp(40px,5.2vw,84px);font-weight:700;letter-spacing:-.03em;line-height:1.05;opacity:0}
+.gal__card{
+  position:absolute;z-index:2;left:50%;top:58%;
+  width:560px;height:400px;transform:translate(-50%,-50%) rotate(-9deg);
+  border-radius:var(--r);overflow:hidden;will-change:width,height,transform;
+}
+.gal__card img{width:100%;height:100%;object-fit:cover}
 
-/* ─── advantages: frosted cards over a photo, revealed on entry ─── */
-.adv{position:relative}
-.adv__sticky{position:relative;overflow:hidden;padding:140px 44px 150px}
+/* ─── advantages: staggered frosted cards over a pinned photo (desktop scrub) ─── */
+.adv{height:240vh;position:relative}
+.adv__sticky{position:sticky;top:0;height:100vh;height:100dvh;overflow:hidden}
 .adv__bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .adv__sticky::after{content:"";position:absolute;inset:0;background:rgba(8,16,22,.34)}
 .adv__cards{
-  position:relative;z-index:2;max-width:1360px;margin:0 auto;
+  position:absolute;z-index:2;left:44px;right:44px;top:50%;transform:translateY(-50%);
   display:grid;grid-template-columns:repeat(4,1fr);gap:24px;align-items:start;
 }
 .advcard{
@@ -309,13 +309,10 @@ body.has-abar .hero{height:calc(100vh - 38px);height:calc(100svh - 38px)}
   -webkit-backdrop-filter:blur(22px);backdrop-filter:blur(22px);
   box-shadow:0 18px 44px rgba(4,10,16,.28);
 }
-html.js .adv__cards[data-rv]{opacity:1;transform:none}
-html.js .adv__cards[data-rv] .advcard{opacity:0;transform:translateY(80px);
-  transition:opacity .9s cubic-bezier(.2,.65,.25,1),transform .9s cubic-bezier(.2,.65,.25,1)}
-html.js .adv__cards[data-rv].on .advcard{opacity:1;transform:none}
-.adv__cards .advcard:nth-child(2){transition-delay:.1s}
-.adv__cards .advcard:nth-child(3){transition-delay:.2s}
-.adv__cards .advcard:nth-child(4){transition-delay:.3s}
+/* the scrub drives the cards on desktop; phones keep them visible for the carousel */
+@media(min-width:860px){
+  html.js .advcard{opacity:0;transform:translateY(140px);will-change:opacity,transform}
+}
 .advcard h3{color:#fff;font-size:21px;margin-bottom:16px;letter-spacing:-.01em}
 .advcard p{font-size:14.5px;line-height:1.66;color:rgba(255,255,255,.92)}
 /* staircase resting layout on the 4-column desktop grid */
@@ -403,6 +400,7 @@ html.js .acc__body{max-height:0}
 /* ═══ responsive ═══ */
 @media(max-width:1080px){
   .adv__cards{grid-template-columns:repeat(2,1fr)}
+  .adv{height:280vh}
   .reel__item{width:330px;height:390px}
 }
 @media(max-width:860px){
@@ -435,11 +433,13 @@ html.js .acc__body{max-height:0}
   .reel__item{width:78vw;height:96vw;scroll-snap-align:center}
   .reel__item::after{opacity:0 !important}
   .reel__title{margin-top:34px}
-  .gal2{padding:80px 0 90px}
-  .gal2__head{padding:0 22px;margin-bottom:34px;flex-direction:column;gap:18px}
-  .gal2__media{margin:0 22px;height:min(64vh,540px);min-height:340px;border-radius:18px}
-  .gal2__b{left:22px;bottom:22px}
-  .adv__sticky{padding:90px 22px 110px}
+  .gal{height:280vh}
+  .gal__copy{left:22px;right:22px;flex-direction:column;gap:22px;top:10%}
+  .gal__b{right:22px;bottom:11%}
+  .gal__card{width:78vw;height:52vw;top:56%}
+  .adv{height:auto}
+  .adv__sticky{position:relative;top:auto;height:auto;padding:90px 22px 110px}
+  .adv__cards{position:relative;left:auto;right:auto;top:auto;transform:none}
   .advcard{padding:24px 22px 26px;min-height:0}
   .proc{padding:80px 22px}
   .proc__grid{grid-template-columns:1fr 1fr;gap:44px 24px}
@@ -705,9 +705,8 @@ html.js .acc__body{max-height:0}
    Per-page signature sections
    ══════════════════════════════════════════════════════════════════ */
 
-/* image settle-in for frames flagged with .frame--scale */
-html.js .frame--scale img{transform:scale(.86);transition:transform 1.2s cubic-bezier(.2,.65,.25,1)}
-html.js .frame--scale.on img{transform:scale(1)}
+/* scroll-driven helpers */
+.para{will-change:transform}
 
 /* ─── featured slider (homepage) ─── */
 .fslider{position:relative;max-width:1360px;margin:64px auto 0;padding:0 44px}
