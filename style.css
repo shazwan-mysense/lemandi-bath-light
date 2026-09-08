@@ -750,13 +750,14 @@ html.js .acc__body{max-height:0}
   .hscroll__track{grid-template-columns:1fr;padding:0 22px}
 }
 
-/* ─── services: panels revealed on entry ─── */
+/* ─── services: stacking panels pin on top of each other as you scroll ─── */
 .stack{max-width:1360px;margin:0 auto;padding:90px 44px 130px}
 .stack__panel{
+  position:sticky;top:calc(102px + var(--i)*16px);
   display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;
-  margin-bottom:28px;padding:56px 60px;
+  min-height:66vh;margin-bottom:34px;padding:56px 60px;
   border-radius:24px;background:#fff;border:1px solid #E6EBEF;
-  box-shadow:0 14px 40px rgba(10,20,26,.06);
+  box-shadow:0 -12px 40px rgba(10,20,26,.07);
 }
 .stack__panel--soft{background:var(--soft)}
 .stack__panel--mist{background:var(--mist)}
@@ -812,7 +813,7 @@ html.js .acc__body{max-height:0}
 @media(max-width:860px){
   .fslider{padding:0 22px;margin-top:44px}
   .stack{padding:60px 22px 90px}
-  .stack__panel{margin-bottom:20px}
+  .stack__panel{position:static;margin-bottom:20px}
   .gmq{padding:50px 0 14px}
 }
 
