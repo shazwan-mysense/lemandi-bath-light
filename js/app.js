@@ -446,10 +446,6 @@
   const galCard = $('.gal__card');
   const galA = $('.gal__copy');
   const galB = $('.gal__b');
-  const adv = $('.adv');
-  const advSticky = $('.adv__sticky');
-  const advCards = $$('.advcard');
-  let advDirty = false;
   const zoomImgs = $$('.js-zoom img');
   const paraFrames = $$('.para');
   const faqRail = $('.faqrail');
@@ -508,27 +504,6 @@
            the image simply becomes its background */
         if (galA) galA.style.opacity = 1;
         if (galB) galB.style.opacity = clamp01((p - 0.2) / 0.22);
-      }
-    }
-
-    /* advantages: staggered frosted cards over the pinned photo —
-       desktop only; phones use the carousel instead */
-    if (adv && advSticky) {
-      if (vw >= 860) {
-        const r = adv.getBoundingClientRect();
-        if (r.bottom > 0 && r.top < vh) {
-          const sh = advSticky.getBoundingClientRect().height;
-          const p = clamp01(-r.top / (r.height - sh));
-          advCards.forEach((card, i) => {
-            const pc = easeIO(clamp01(p * 2.1 - i * 0.24));
-            card.style.opacity = pc;
-            card.style.transform = 'translateY(' + (1 - pc) * 140 + 'px)';
-          });
-          advDirty = true;
-        }
-      } else if (advDirty) {
-        advDirty = false;
-        advCards.forEach(card => { card.style.opacity = ''; card.style.transform = ''; });
       }
     }
 

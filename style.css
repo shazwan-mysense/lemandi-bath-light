@@ -294,13 +294,13 @@ body.has-abar .hero{height:calc(100vh - 38px);height:calc(100svh - 38px)}
 }
 .gal__card img{width:100%;height:100%;object-fit:cover}
 
-/* ─── advantages: staggered frosted cards over a pinned photo (desktop scrub) ─── */
-.adv{height:240vh;position:relative}
-.adv__sticky{position:sticky;top:0;height:100vh;height:100dvh;overflow:hidden}
+/* ─── advantages: static frosted cards over a photo (client asked for no motion) ─── */
+.adv{position:relative}
+.adv__sticky{position:relative;overflow:hidden;padding:140px 44px 150px}
 .adv__bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .adv__sticky::after{content:"";position:absolute;inset:0;background:rgba(8,16,22,.34)}
 .adv__cards{
-  position:absolute;z-index:2;left:44px;right:44px;top:50%;transform:translateY(-50%);
+  position:relative;z-index:2;max-width:1360px;margin:0 auto;
   display:grid;grid-template-columns:repeat(4,1fr);gap:24px;align-items:start;
 }
 .advcard{
@@ -308,10 +308,6 @@ body.has-abar .hero{height:calc(100vh - 38px);height:calc(100svh - 38px)}
   background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.42);
   -webkit-backdrop-filter:blur(22px);backdrop-filter:blur(22px);
   box-shadow:0 18px 44px rgba(4,10,16,.28);
-}
-/* the scrub drives the cards on desktop; phones keep them visible for the carousel */
-@media(min-width:860px){
-  html.js .advcard{opacity:0;transform:translateY(140px);will-change:opacity,transform}
 }
 .advcard h3{color:#fff;font-size:21px;margin-bottom:16px;letter-spacing:-.01em}
 .advcard p{font-size:14.5px;line-height:1.66;color:rgba(255,255,255,.92)}
@@ -400,7 +396,6 @@ html.js .acc__body{max-height:0}
 /* ═══ responsive ═══ */
 @media(max-width:1080px){
   .adv__cards{grid-template-columns:repeat(2,1fr)}
-  .adv{height:280vh}
   .reel__item{width:330px;height:390px}
 }
 @media(max-width:860px){
@@ -437,9 +432,7 @@ html.js .acc__body{max-height:0}
   .gal__copy{left:22px;right:22px;flex-direction:column;gap:22px;top:10%}
   .gal__b{right:22px;bottom:11%}
   .gal__card{width:78vw;height:52vw;top:56%}
-  .adv{height:auto}
-  .adv__sticky{position:relative;top:auto;height:auto;padding:90px 22px 110px}
-  .adv__cards{position:relative;left:auto;right:auto;top:auto;transform:none}
+  .adv__sticky{padding:90px 22px 110px}
   .advcard{padding:24px 22px 26px;min-height:0}
   .proc{padding:80px 22px}
   .proc__grid{grid-template-columns:1fr 1fr;gap:44px 24px}
@@ -750,14 +743,13 @@ html.js .acc__body{max-height:0}
   .hscroll__track{grid-template-columns:1fr;padding:0 22px}
 }
 
-/* ─── services: stacking panels pin on top of each other as you scroll ─── */
+/* ─── services: static panels (client asked for no stacking scroll) ─── */
 .stack{max-width:1360px;margin:0 auto;padding:90px 44px 130px}
 .stack__panel{
-  position:sticky;top:calc(102px + var(--i)*16px);
   display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;
-  min-height:66vh;margin-bottom:34px;padding:56px 60px;
+  margin-bottom:28px;padding:56px 60px;
   border-radius:24px;background:#fff;border:1px solid #E6EBEF;
-  box-shadow:0 -12px 40px rgba(10,20,26,.07);
+  box-shadow:0 14px 40px rgba(10,20,26,.06);
 }
 .stack__panel--soft{background:var(--soft)}
 .stack__panel--mist{background:var(--mist)}
@@ -804,7 +796,7 @@ html.js .acc__body{max-height:0}
   .fslide{grid-template-columns:1fr;padding:40px 36px 96px;min-height:0}
   .fslider__nav{right:36px;bottom:28px}
   .fslider__dots{left:36px;bottom:36px}
-  .stack__panel{grid-template-columns:1fr;min-height:0;padding:40px 36px}
+  .stack__panel{grid-template-columns:1fr;padding:40px 36px}
   .faqgrid{grid-template-columns:1fr;gap:28px}
   .faqrail{position:static;flex-direction:row;overflow-x:auto;scrollbar-width:none;margin:0 -22px;padding:0 22px 6px}
   .faqrail::-webkit-scrollbar{display:none}
@@ -813,7 +805,7 @@ html.js .acc__body{max-height:0}
 @media(max-width:860px){
   .fslider{padding:0 22px;margin-top:44px}
   .stack{padding:60px 22px 90px}
-  .stack__panel{position:static;margin-bottom:20px}
+  .stack__panel{margin-bottom:20px}
   .gmq{padding:50px 0 14px}
 }
 
