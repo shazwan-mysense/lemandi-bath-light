@@ -95,80 +95,64 @@
     });
   });
 
-  /* ── category reel: hover (desktop) or auto-cycle to swipe the title ── */
-  const reel = $('.reel');
-  if (reel) {
-    const titleBox = $('.reel__title', reel);
-    const items = $$('.reel__set:not(.reel__set--dup) .reel__item', reel);
-    const allItems = $$('.reel__item', reel);
-    const viewport = $('.reel__viewport', reel);
-    const titles = items.map(a => a.dataset.title);
-    let idx = 0, autoTimer = null, hovering = false;
+  /* ── titled category carousel (client: "carousel with title in every cell") ── */
+  $$('[data-csl]').forEach(csl => {
+    const track   = $('.csl2__track', csl);
+    const cells   = $$('.csl2__cell', csl);
+    const prev    = $('.csl2__arw--prev', csl);
+    const next    = $('.csl2__arw--next', csl);
+    const dotsBox = $('.csl2__dots', csl);
+    if (!track || cells.length < 2) return;
 
-    const swipeTo = (t) => {
-      const cur = titleBox.querySelector('.reel__word:not(.reel__word--out)');
-      if (cur && cur.textContent === t) return;
-      if (cur) {
-        cur.classList.add('reel__word--out');
-        setTimeout(() => cur.remove(), 700);
-      }
-      const next = document.createElement('span');
-      next.className = 'reel__word reel__word--in';
-      next.textContent = t;
-      titleBox.appendChild(next);
-      next.offsetHeight; /* force reflow so the transition actually runs */
-      next.classList.remove('reel__word--in');
-    };
+    let page = 0, timer = null, hovered = false;
+    const perView = () => (innerWidth < 860 ? 1 : innerWidth < 1081 ? 2 : 3);
+    const pageCount = () => Math.max(1, Math.ceil(cells.length / perView()));
 
-    const isMobile = () => innerWidth < 860;
-
-    const advance = () => {
-      idx = (idx + 1) % titles.length;
-      swipeTo(titles[idx]);
-      if (isMobile() && viewport && items[idx]) {
-        viewport.scrollTo({ left: items[idx].offsetLeft - (viewport.clientWidth - items[idx].offsetWidth) / 2,
-                            behavior: 'smooth' });
+    const buildDots = () => {
+      if (!dotsBox) return;
+      dotsBox.innerHTML = '';
+      for (let i = 0; i < pageCount(); i++) {
+        const b = document.createElement('button');
+        b.setAttribute('aria-label', 'Go to slide ' + (i + 1));
+        b.addEventListener('click', () => go(i, true));
+        dotsBox.appendChild(b);
       }
     };
-    const startAuto = () => { clearInterval(autoTimer); autoTimer = setInterval(advance, 3200); };
-    const stopAuto = () => clearInterval(autoTimer);
-
-    /* desktop: hovering an image takes over the title */
-    allItems.forEach(a => {
-      a.addEventListener('mouseenter', () => {
-        if (isMobile()) return;
-        hovering = true; stopAuto();
-        const i = titles.indexOf(a.dataset.title);
-        if (i > -1) idx = i;
-        swipeTo(a.dataset.title);
-      });
-    });
-    reel.addEventListener('mouseleave', () => { hovering = false; if (!document.hidden) startAuto(); });
-
-    /* mobile: swiping the slider updates the title too */
-    if (viewport) {
-      let sTimer = null;
-      viewport.addEventListener('scroll', () => {
-        if (!isMobile()) return;
-        clearTimeout(sTimer);
-        sTimer = setTimeout(() => {
-          const mid = viewport.scrollLeft + viewport.clientWidth / 2;
-          let best = 0, bd = Infinity;
-          items.forEach((it, i) => {
-            const c = it.offsetLeft + it.offsetWidth / 2;
-            if (Math.abs(c - mid) < bd) { bd = Math.abs(c - mid); best = i; }
-          });
-          if (best !== idx) { idx = best; swipeTo(titles[idx]); }
-        }, 90);
-      }, { passive: true });
+    const paint = () => {
+      if (dotsBox) $$('button', dotsBox).forEach((d, i) => d.classList.toggle('on', i === page));
+    };
+    function go(i, manual) {
+      const n = pageCount();
+      page = (i + n) % n;
+      const step = cells[0].getBoundingClientRect().width +
+                   (parseFloat(getComputedStyle(track).columnGap || getComputedStyle(track).gap) || 0);
+      track.style.transform = 'translateX(' + (-step * perView() * page) + 'px)';
+      paint();
+      if (manual) restart();
     }
+    function restart() {
+      clearInterval(timer);
+      if (!hovered && !document.hidden) timer = setInterval(() => go(page + 1), 4500);
+    }
+    if (prev) prev.addEventListener('click', () => go(page - 1, true));
+    if (next) next.addEventListener('click', () => go(page + 1, true));
+    csl.addEventListener('mouseenter', () => { hovered = true; clearInterval(timer); });
+    csl.addEventListener('mouseleave', () => { hovered = false; restart(); });
+    document.addEventListener('visibilitychange', restart);
 
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden || hovering) stopAuto(); else startAuto();
+    let rt = null, lastPV = perView();
+    addEventListener('resize', () => {
+      clearTimeout(rt);
+      rt = setTimeout(() => {
+        if (perView() !== lastPV) { lastPV = perView(); buildDots(); page = 0; }
+        go(page);
+      }, 140);
     });
-    swipeTo(titles[0]);
-    startAuto();
-  }
+
+    buildDots();
+    go(0);
+    restart();
+  });
 
   /* ── accordions ──
      max-height goes to 'none' once open so resizes/rotation can't clip it */
@@ -215,8 +199,6 @@
 
   /* ── back to top ── */
   const toTop = $('.totop');
-  const toTopProg = toTop ? toTop.querySelector('.totop__prog') : null;
-  const RING = 131.95;
   if (toTop) {
     toTop.addEventListener('click', () => {
       if (lenis) lenis.scrollTo(0, { duration: 1.1 });
@@ -253,52 +235,19 @@
     });
   });
 
-  /* ── featured slider (products page) ── */
-  const fs = $('.fslider');
-  if (fs) {
-    const track = fs.querySelector('.fslider__track');
-    const slides = $$('.fslide', fs);
-    const dotsBox = fs.querySelector('.fslider__dots');
-    const navBtns = $$('.fslider__nav button', fs);
-    let cur = 0, timer = null, hovered = false;
-    if (track && slides.length > 1) {
-      slides.forEach((_, i) => {
-        const b = document.createElement('button');
-        b.setAttribute('aria-label', 'Slide ' + (i + 1));
-        b.addEventListener('click', () => go(i, true));
-        dotsBox.appendChild(b);
-      });
-      const dots = $$('button', dotsBox);
-      function go(i, manual) {
-        cur = (i + slides.length) % slides.length;
-        track.style.transform = 'translateX(-' + cur * 100 + '%)';
-        dots.forEach((d, n) => d.classList.toggle('on', n === cur));
-        if (manual) restart();
-      }
-      function restart() {
-        clearInterval(timer);
-        if (!hovered && !document.hidden) timer = setInterval(() => go(cur + 1), 5200);
-      }
-      if (navBtns[0]) navBtns[0].addEventListener('click', () => go(cur - 1, true));
-      if (navBtns[1]) navBtns[1].addEventListener('click', () => go(cur + 1, true));
-      fs.addEventListener('mouseenter', () => { hovered = true; clearInterval(timer); });
-      fs.addEventListener('mouseleave', () => { hovered = false; restart(); });
-      document.addEventListener('visibilitychange', restart);
-      go(0); restart();
-    } else {
-      /* single slide: no chrome, no timer */
-      if (dotsBox) dotsBox.style.display = 'none';
-      const nav = fs.querySelector('.fslider__nav');
-      if (nav) nav.style.display = 'none';
-    }
-  }
-
   /* ── phone-size carousel for the advantages cards ──
      one card per view, auto-advances every 2s, arrows + dot nav */
   $$('.adv--csl').forEach(section => {
     const track = section.querySelector('.adv__cards');
     const cards = track ? $$('.advcard', track) : [];
     if (!track || cards.length < 2) return;
+
+    /* the arrows sit on the left and right edges of the strip, so the track
+       needs a non-scrolling parent to anchor them (client wireframe #16) */
+    const wrap = document.createElement('div');
+    wrap.className = 'csl__wrap';
+    track.parentNode.insertBefore(wrap, track);
+    wrap.appendChild(track);
 
     const ui = document.createElement('div');
     ui.className = 'csl__ui';
@@ -311,8 +260,9 @@
     const next = document.createElement('button');
     next.textContent = '→'; next.setAttribute('aria-label', 'Next');
     nav.append(prev, next);
-    ui.append(dots, nav);
-    track.after(ui);
+    wrap.appendChild(nav);
+    ui.append(dots);
+    wrap.after(ui);
 
     let idx = 0, timer = null, holdOff = null;
     cards.forEach((_, i) => {
@@ -364,6 +314,14 @@
   /* ── shop page: live filters and sorting on the mock catalogue ── */
   const shop = $('.shop');
   if (shop) {
+    /* client #20: on tablet and phone the panel stays hidden behind a dropdown */
+    const filterBtn = $('.shop__filterbtn');
+    if (filterBtn) {
+      filterBtn.addEventListener('click', () => {
+        const open = shop.classList.toggle('filters-open');
+        filterBtn.setAttribute('aria-expanded', open);
+      });
+    }
     const grid = shop.querySelector('.pgrid');
     const cardsAll = $$('.pcard', grid);
     const count = shop.querySelector('.shop__count');
@@ -549,13 +507,8 @@
       de.classList.toggle('hd-invert', invert);
     }
 
-    /* back to top: reveal past the first screen, ring tracks page progress */
-    if (toTop) {
-      const max = document.documentElement.scrollHeight - vh;
-      const p = max > 0 ? clamp01(scrollY / max) : 0;
-      toTop.classList.toggle('on', scrollY > vh * 0.7);
-      if (toTopProg) toTopProg.style.strokeDashoffset = (RING * (1 - p)).toFixed(2);
-    }
+    /* back to top: reveal past the first screen */
+    if (toTop) toTop.classList.toggle('on', scrollY > vh * 0.7);
 
   }
 
