@@ -206,7 +206,85 @@
     });
   }
 
-  /* ── product page: gallery thumbs, quantity stepper, variant pills ── */
+  /* ── product page: render whichever product the link asked for ──
+     every product card and marquee tile links to product.html?p=<slug>;
+     in the WooCommerce build each slug becomes its own permalink */
+  const pgBuy = $('.pg__buy');
+  if (pgBuy && window.LEMANDI_CATALOG) {
+    const CAT = window.LEMANDI_CATALOG;
+    const slug = new URLSearchParams(location.search).get('p');
+    const item = slug ? CAT.items[slug] : null;
+    if (item) {
+      const money = n => 'RM ' + Number(n).toLocaleString('en-MY');
+      const catName = CAT.cats[item.cat] || '';
+
+      document.title = item.name + ' — LEmandi Bath & Light';
+      const meta = $('meta[name="description"]');
+      if (meta) meta.setAttribute('content', item.name + ' at a warehouse-direct price. See it up close at our Balakong showroom.');
+
+      const crumbSpans = $$('.crumbs span');
+      if (crumbSpans[0]) crumbSpans[0].innerHTML = '<a href="products.html" style="color:var(--body)">' + catName + '</a>';
+      if (crumbSpans[1]) crumbSpans[1].textContent = item.name;
+
+      const catLine = $('.pg__cat');
+      if (catLine) catLine.innerHTML = catName + (item.brand ? ' · ' + item.brand : '');
+      const h1 = $('h1', pgBuy);
+      if (h1) h1.textContent = item.name;
+
+      const priceEl = $('.pg__price');
+      if (priceEl) {
+        priceEl.innerHTML = money(item.price) +
+          (item.was ? ' <s>' + money(item.was) + '</s><span class="pg__save">Save ' + money(item.was - item.price) + '</span>' : '');
+      }
+
+      const pts = $('.pg__points');
+      if (pts) pts.innerHTML = item.points.map(t => '<li>' + t + '</li>').join('');
+
+      const variants = $('.variants');
+      if (variants) {
+        variants.innerHTML = item.colours.map((c, i) => '<button' + (i ? '' : ' class="on"') + '>' + c + '</button>').join('');
+      }
+
+      /* gallery: first image is the hero shot, the rest become thumbs */
+      const mainImg = $('.pg__main img');
+      if (mainImg) { mainImg.src = item.images[0][0]; mainImg.alt = item.images[0][1]; }
+      const thumbs = $('.pg__thumbs');
+      if (thumbs) {
+        thumbs.innerHTML = item.images.map((im, i) =>
+          '<button' + (i ? '' : ' class="on"') + ' data-img="' + im[0] + '"><img src="' + im[0] + '" alt="' + im[1] + '"></button>').join('');
+      }
+
+      const metaBox = $('.pg__meta');
+      if (metaBox) {
+        metaBox.innerHTML = '<p><b>SKU</b> · ' + item.sku + '</p><p><b>Category</b> · ' + catName + '</p>' +
+          (item.brand ? '<p><b>Brand</b> · ' + item.brand + '</p>' : '');
+      }
+
+      /* the annotated close-up only exists for products we have notes for */
+      const anno = $('.anno');
+      if (anno) {
+        if (item.anno) {
+          anno.innerHTML = '<img src="' + item.images[0][0] + '" alt="' + item.images[0][1] + '">' +
+            item.anno.map(n => '<div class="anno__note" style="' + n[0] + '">' + n[1] + '</div>').join('');
+        } else {
+          anno.remove();
+          const head = $('.pg__gallery .pgsec__head');
+          if (head) head.remove();
+        }
+      }
+
+      const bodies = $$('.acc__body');
+      if (bodies[0]) bodies[0].innerHTML = '<p>' + item.desc + '</p>';
+      if (bodies[1]) {
+        const rows = item.specs || [['Category', catName], ['Colour options', item.colours.join(', ')],
+                                    ['Where to see it', 'Balakong showroom, open daily 9 to 6']];
+        bodies[1].innerHTML = '<table class="spec">' +
+          rows.map(r => '<tr><td>' + r[0] + '</td><td>' + r[1] + '</td></tr>').join('') + '</table>';
+      }
+    }
+  }
+
+  /* ── product page: gallery thumbs ── */
   const pgMain = $('.pg__main img');
   if (pgMain) {
     $$('.pg__thumbs button').forEach(t => {
@@ -219,6 +297,7 @@
       });
     });
   }
+
   /* whatsapp CTA carries the product name + page link in the message */
   const waProduct = $('.js-waproduct');
   if (waProduct) {
