@@ -399,19 +399,12 @@
   const fillEls = $$('.js-fill');
   const scaleImgs = $$('.frame--scale img');
   const statsEl = $('[data-stats]');
-  const gal = $('.gal');
-  const galSticky = $('.gal__sticky');
-  const galCard = $('.gal__card');
-  const galA = $('.gal__copy');
-  const galB = $('.gal__b');
   const zoomImgs = $$('.js-zoom img');
   const paraFrames = $$('.para');
   const faqRail = $('.faqrail');
   const faqPairs = (faqRail ? $$('a', faqRail) : [])
     .map(a => [a, document.querySelector(a.getAttribute('href'))])
     .filter(p => p[1]);
-
-  const CARD_W0 = 560, CARD_H0 = 400;
 
   function render() {
     const vh = innerHeight, vw = innerWidth;
@@ -440,29 +433,6 @@
       const r = img.parentElement.getBoundingClientRect();
       const p = easeIO(clamp01((vh - r.top) / (vh * 0.75)));
       img.style.transform = 'scale(' + (0.8 + 0.2 * p) + ')';
-    }
-
-    /* gallery scrub: tilted card grows to full-bleed
-       (sticky height measured, not innerHeight — iOS toolbars differ) */
-    if (gal && galSticky && galCard) {
-      const r = gal.getBoundingClientRect();
-      if (r.bottom > 0 && r.top < vh) {
-        const sh = galSticky.getBoundingClientRect().height;
-        const p = clamp01(-r.top / (r.height - sh));
-        const e = easeIO(p);
-        const isMobile = vw < 860;
-        const w0 = isMobile ? vw * 0.78 : Math.min(CARD_W0, vw * 0.42);
-        const h0 = isMobile ? vw * 0.52 : CARD_H0;
-        galCard.style.width = lerp(w0, vw, e) + 'px';
-        galCard.style.height = lerp(h0, sh, e) + 'px';
-        galCard.style.top = lerp(58, 50, e) + '%';
-        galCard.style.borderRadius = lerp(16, 0, e) + 'px';
-        galCard.style.transform = 'translate(-50%,-50%) rotate(' + lerp(-9, 0, e) + 'deg)';
-        /* the copy stays on top of the growing card for the whole scrub;
-           the image simply becomes its background */
-        if (galA) galA.style.opacity = 1;
-        if (galB) galB.style.opacity = clamp01((p - 0.2) / 0.22);
-      }
     }
 
     /* about: parallax image grid */
