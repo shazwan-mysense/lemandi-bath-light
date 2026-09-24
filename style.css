@@ -840,12 +840,18 @@ html.js .acc__body{max-height:0}
   border-radius:24px;background:#fff;border:1px solid #E6EBEF;
   box-shadow:0 14px 40px rgba(10,20,26,.06);
 }
-.stack__panel--soft{background:var(--soft)}
-.stack__panel--mist{background:var(--mist)}
-.stack__panel--blue{background:linear-gradient(120deg,#1E9BE6 0%,var(--blue) 100%);border-color:transparent}
+/* the four panels read as one blue ramp — white, pale, light, deep — so the
+   last one lands as the anchor instead of jumping out of nowhere */
+.stack__panel--soft{background:#F0F7FB;border-color:#E4EDF3}
+.stack__panel--mist{background:#D8E9F4;border-color:#C6DDEC}
+.stack__panel--mist .svc__list li{border-color:rgba(10,60,100,.16)}
+.stack__panel--blue{
+  background:linear-gradient(135deg,#1B7FC4 0%,var(--blue-deep) 100%);
+  border-color:transparent;box-shadow:0 18px 44px rgba(10,60,100,.18);
+}
 .stack__panel--blue h3,.stack__panel--blue .svc__list li{color:#fff}
-.stack__panel--blue .svc__list li{border-color:rgba(255,255,255,.3)}
-.stack__panel--blue .svc__list li::after{color:#fff}
+.stack__panel--blue .svc__list li{border-color:rgba(255,255,255,.26)}
+.stack__panel--blue .svc__list li::after{color:rgba(255,255,255,.8)}
 .stack__panel .frame img{aspect-ratio:16/11}
 .stack__panel .svc__no{margin-bottom:10px}
 
